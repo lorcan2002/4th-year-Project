@@ -1,0 +1,342 @@
+```{r}
+setwd("C:\\Users\\lorca\\Documents\\Project\\4 Colon")
+```
+
+
+```{r}
+Colon_dec <- read.table("CIBERSORTx_Colon.txt")
+Colon_dec
+```
+
+
+```{r}
+# Extract the first row of the data frame
+first_row <- Colon_dec[1, ]
+
+# Assign the values from the first row as column names
+colnames(Colon_dec) <- first_row
+
+# Remove the first row, as it's no longer needed as column names
+Colon_dec <- Colon_dec[-1, ]
+
+rownames(Colon_dec) <- NULL
+
+# Display the resulting data frame
+print(Colon_dec)
+```
+
+```{r}
+names(Colon_dec)[names(Colon_dec) == "Mixture"] <- "SUBJID"
+```
+
+
+
+```{r}
+colnames(Colon_dec)
+Colon_dec
+```
+
+```{r}
+age_sex <- read.csv("GTEx_Analysis_v8_Annotations_SubjectPhenotypes.txt", header = FALSE, sep = "\t")
+age_sex
+```
+
+```{r}
+# Extract the first row of the data frame
+first_row <- age_sex[1, ]
+
+# Assign the values from the first row as column names
+colnames(age_sex) <- first_row
+
+# Remove the first row, as it's no longer needed as column names
+age_sex <- age_sex[-1, ]
+
+rownames(age_sex) <- NULL
+
+# Display the resulting data frame
+print(age_sex)
+```
+
+```{r}
+merged_data2 <- merge(Colon_dec, age_sex, by = "SUBJID", all.x = TRUE)
+merged_data2
+```
+
+```{r}
+colnames(merged_data2)
+```
+
+```{r}
+
+# Function to calculate mid age from age range
+calculate_mid_age <- function(age_range) {
+  age_values <- as.numeric(strsplit(age_range, "-")[[1]])
+  mid.age <- mean(age_values)
+  return(mid.age)
+}
+
+# Apply the function to each row of merged_data and create a new column "mid_age"
+merged_data2$mid.age <- sapply(merged_data2$AGE, calculate_mid_age)
+
+# Print the dataframe to see the changes
+print(merged_data2)
+```
+
+```{r}
+# Increase all numbers in the mid_age column by 0.5
+merged_data2$mid.age <- merged_data2$mid.age + 0.5
+
+# Print the dataframe to see the changes
+print(merged_data2)
+
+```
+
+```{r}
+num_cols <- ncol(merged_data2)
+
+# Reorder the columns
+new_order <- c(1:10, 14, 11:13, (15:num_cols)[(15:num_cols) <= num_cols])  # Define the new order of columns
+merged_data2 <- merged_data2[, new_order]  # Reorder the columns
+merged_data2 <- merged_data2[, -which(names(merged_data2) == "mid.age.1")]
+merged_data2
+```
+
+```{r}
+columns_to_convert <- 2:7
+
+# Loop through each column and convert
+for (col_index in columns_to_convert) {
+   merged_data2[[col_index]] <- round(as.numeric(as.character(merged_data2[[col_index]])), digits = 3)
+  # or if you want to round the values
+  # merged_data[[col_index]] <- round(as.numeric(as.character(merged_data[[col_index]])), digits = 3)
+}
+```
+
+```{r}
+merged_data2$SEX <- as.numeric(as.character(merged_data2$SEX))
+# or
+# merged_data$column_name <- as.integer(as.character(merged_data$column_name))
+print(merged_data2$SEX)
+merged_data2
+```
+
+```{r}
+merged_data2[, 11:12] <- lapply(merged_data2[, 11:12], as.integer)
+merged_data2
+str(merged_data2)
+```
+
+Bcell
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Bcell <- ggscatter(data = merged_data2, x = "mid.age", y = "Bcell", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Bcell
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Bcell.png", plot = p_Bcell)
+```
+```{r}
+correlation_result <- cor.test(merged_data2$Bcell, merged_data2$mid.age, method = "spearman")
+
+Bcell <- correlation_result$p.value
+
+print(Bcell)
+```
+
+Tcell
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Tcell <- ggscatter(data = merged_data2, x = "mid.age", y = "Tcell", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Tcell
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Tcell.png", plot = p_Tcell)
+```
+```{r}
+correlation_result <- cor.test(merged_data2$Tcell, merged_data2$mid.age, method = "spearman")
+
+Tcell <- correlation_result$p.value
+
+print(Tcell)
+```
+
+Epithelial
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Epithelial <- ggscatter(data = merged_data2, x = "mid.age", y = "Epithelial", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Epithelial
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Epithelial.png", plot = p_Epithelial)
+```
+```{r}
+correlation_result <- cor.test(merged_data2$Epithelial, merged_data2$mid.age, method = "spearman")
+
+Epithelial <- correlation_result$p.value
+
+print(Epithelial)
+```
+
+Fibroblast
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Fibroblast <- ggscatter(data = merged_data2, x = "mid.age", y = "Fibroblast", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Fibroblast
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Fibroblast.png", plot = p_Fibroblast)
+```
+```{r}
+correlation_result <- cor.test(merged_data2$Fibroblast, merged_data2$mid.age, method = "spearman")
+
+Fibroblast <- correlation_result$p.value
+
+print(Fibroblast)
+```
+
+MastCell
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_MastCell <- ggscatter(data = merged_data2, x = "mid.age", y = "MastCell", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "MastCell
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_MastCell.png", plot = p_MastCell)
+```
+```{r}
+correlation_result <- cor.test(merged_data2$MastCell, merged_data2$mid.age, method = "spearman")
+
+MastCell <- correlation_result$p.value
+
+print(MastCell)
+```
+
+Macrophage
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Macrophage <- ggscatter(data = merged_data2, x = "mid.age", y = "Macrophage", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Macrophage
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Macrophage.png", plot = p_Macrophage)
+```
+```{r}
+correlation_result <- cor.test(merged_data2$Macrophage, merged_data2$mid.age, method = "spearman")
+
+Macrophage <- correlation_result$p.value
+
+print(Macrophage)
+```
+
+
+```{r}
+pvalues2 <- c(Bcell, Tcell, Epithelial, Fibroblast, MastCell, Macrophage)
+
+p.adjust(pvalues2,method="bonferroni")
+```
+no significant correlation for all => except Epithelial + Fibroblast  
+
+```{r}
+pvalues2 <- c(Bcell, Tcell, Epithelial, Fibroblast, MastCell, Macrophage)
+
+p.adjust(pvalues2,method="BH")
+```
+
+no significant correlation for all => except Epithelial + Fibroblast  
+
+```{r}
+library(tidyr)
+data_long2 <- merged_data2 %>%
+  pivot_longer(cols = c("Bcell", "Tcell", "Epithelial", "Fibroblast", "MastCell", "Macrophage"), names_to = "Cell_Type", values_to = "Fraction")
+```
+
+```{r}
+data_long2
+```
+
+
+```{r}
+library(viridis)
+
+# Generate a sequence of colors using the viridis palette
+colors <- viridis(20)
+
+library(dplyr)
+p3 <- data_long2 %>%
+  group_by(AGE,Cell_Type) %>%
+  summarise(mf = mean(Fraction)) %>%
+  ungroup()%>%
+  ggplot(aes(y = AGE, x = mf, fill = Cell_Type)) +
+  geom_bar(stat = "identity") +
+  scale_fill_viridis_d() +
+  labs(title = "Cellular composition according to age", y = "Age", x = "Fraction of Cell Types") +
+  theme_minimal() +
+  coord_flip() 
+
+p3
+
+
+p3 <- recordPlot()
+png("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Colon_Cell_Comp.png", width = 6, height = 4, units = "in", res = 800)
+replayPlot(p3)
+dev.off()
+
+```
+
+p <- recordPlot()
+png("cellular_composition.png", width = 6, height = 4, units = "in", res = 800, bg = "transparent")
+replayPlot(p)
+dev.off()
+
+
+
+
+
+```{r}
+p3_age <- barplot(table(merged_data2$AGE), 
+        main = "Age of our samples",
+        xlab = "Age",
+        ylab = "Number of samples")
+p3_age
+p3_age <- recordPlot()
+png("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Colon_Age_Nb.png", width = 6, height = 4, units = "in", res = 800)
+replayPlot(p3_age)
+dev.off()
+```
+```{r}
+# Calculate the total number of samples
+total_samples <- sum(table(merged_data2$AGE))
+
+# Print the total number of samples
+cat("Total samples:", total_samples, "\n")
+
+```
+
+
+
+
+
