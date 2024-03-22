@@ -1,0 +1,674 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+try echo=False
+ggsave (filename, plot = plotname)
+
+install.packages("tinytex")
+tinytex::install_tinytex()
+
+
+```{r}
+library(biomaRt)
+library(Seurat)
+library(SeuratDisk)
+library(tidyverse)
+```
+
+
+
+```{r}
+setwd("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_")
+```
+
+
+```{r}
+Liver_dec <- read.table("CIBERSORTx_Results_Liver.txt")
+Liver_dec
+```
+
+
+```{r}
+# Extract the first row of the data frame
+first_row <- Liver_dec[1, ]
+
+# Assign the values from the first row as column names
+colnames(Liver_dec) <- first_row
+
+# Remove the first row, as it's no longer needed as column names
+Liver_dec <- Liver_dec[-1, ]
+
+rownames(Liver_dec) <- NULL
+
+# Display the resulting data frame
+print(Liver_dec)
+```
+
+
+```{r}
+names(Liver_dec)[names(Liver_dec) == "Mixture"] <- "SUBJID"
+```
+
+
+
+```{r}
+colnames(Liver_dec)
+Liver_dec
+```
+
+
+
+```{r}
+age_sex <- read.csv("GTEx_Analysis_v8_Annotations_SubjectPhenotypes.txt", header = FALSE, sep = "\t")
+age_sex
+```
+
+```{r}
+# Extract the first row of the data frame
+first_row <- age_sex[1, ]
+
+# Assign the values from the first row as column names
+colnames(age_sex) <- first_row
+
+# Remove the first row, as it's no longer needed as column names
+age_sex <- age_sex[-1, ]
+
+rownames(age_sex) <- NULL
+
+# Display the resulting data frame
+print(age_sex)
+```
+
+
+
+```{r}
+merged_data <- merge(Liver_dec, age_sex, by = "SUBJID", all.x = TRUE)
+merged_data
+```
+
+
+```{r}
+colnames(merged_data)
+```
+
+
+
+```{r}
+
+# Function to calculate mid age from age range
+calculate_mid_age <- function(age_range) {
+  age_values <- as.numeric(strsplit(age_range, "-")[[1]])
+  mid.age <- mean(age_values)
+  return(mid.age)
+}
+
+# Apply the function to each row of merged_data and create a new column "mid_age"
+merged_data$mid.age <- sapply(merged_data$AGE, calculate_mid_age)
+
+# Print the dataframe to see the changes
+print(merged_data)
+```
+
+```{r}
+# Increase all numbers in the mid_age column by 0.5
+merged_data$mid.age <- merged_data$mid.age + 0.5
+
+# Print the dataframe to see the changes
+print(merged_data)
+
+```
+
+```{r}
+num_cols <- ncol(merged_data)
+
+# Reorder the columns
+new_order <- c(1:24, 28, 25:27, (29:num_cols)[(29:num_cols) <= num_cols])  # Define the new order of columns
+merged_data <- merged_data[, new_order]  # Reorder the columns
+merged_data <- merged_data[, -which(names(merged_data) == "mid.age.1")]
+merged_data
+```
+
+```{r}
+columns_to_convert <- 2:23
+
+# Loop through each column and convert
+for (col_index in columns_to_convert) {
+   merged_data[[col_index]] <- round(as.numeric(as.character(merged_data[[col_index]])), digits = 3)
+  # or if you want to round the values
+  # merged_data[[col_index]] <- round(as.numeric(as.character(merged_data[[col_index]])), digits = 3)
+}
+```
+
+```{r}
+merged_data$SEX <- as.numeric(as.character(merged_data$SEX))
+# or
+# merged_data$column_name <- as.integer(as.character(merged_data$column_name))
+print(merged_data$SEX)
+merged_data
+```
+
+```{r}
+merged_data[, 25:26] <- lapply(merged_data[, 25:26], as.integer)
+merged_data
+str(merged_data)
+```
+
+```{r}
+names(merged_data) <- gsub("-", "_", names(merged_data))
+merged_data
+```
+
+
+
+
+Central_venous_LSECs !
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Central_venous_LSECs <- ggscatter(data = merged_data, x = "mid.age", y = "Central_venous_LSECs", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+           main = "Cell type proportion according to age",xlab = "age", ylab = "Central_venous_LSECs
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Central_venous_LSECs.png", plot = p_Central_venous_LSECs)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Central_venous_LSECs, merged_data$mid.age, method = "spearman")
+
+p_value_Central_venous_LSECs <- correlation_result$p.value
+
+print(p_value_Central_venous_LSECs)
+```
+
+Cholangiocytes
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Cholangiocytes <- ggscatter(data = merged_data, x = "mid.age", y = "Cholangiocytes", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Cholangiocytes
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Cholangiocytes.png", plot = p_Cholangiocytes)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Cholangiocytes, merged_data$mid.age, method = "spearman")
+
+p_value_Cholangiocytes <- correlation_result$p.value
+
+print(p_value_Cholangiocytes)
+```
+
+Non_inflammatory_Macrophage !!
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Non_inflammatory_Macrophage <- ggscatter(data = merged_data, x = "mid.age", y = "Non_inflammatory_Macrophage", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Non_inflammatory_Macrophage
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Non_inflammatory_Macrophage.png", plot = p_Non_inflammatory_Macrophage)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Non_inflammatory_Macrophage, merged_data$mid.age, method = "spearman")
+
+p_value_Non_inflammatory_Macrophage <- correlation_result$p.value
+
+print(p_value_Non_inflammatory_Macrophage)
+```
+
+alpha_beta_T_Cells
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_alpha_beta_T_Cells <- ggscatter(data = merged_data, x = "mid.age", y = "alpha_beta_T_Cells", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "alpha_beta_T_Cells
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_alpha_beta_T_Cells.png", plot = p_alpha_beta_T_Cells)
+```
+```{r}
+correlation_result <- cor.test(merged_data$alpha_beta_T_Cells, merged_data$mid.age, method = "spearman")
+
+p_value_alpha_beta_T_Cells <- correlation_result$p.value
+
+print(p_value_alpha_beta_T_Cells)
+```
+
+Inflammatory_Macrophage
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Inflammatory_Macrophage <- ggscatter(data = merged_data, x = "mid.age", y = "Inflammatory_Macrophage", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Inflammatory_Macrophage
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Inflammatory_Macrophage.png", plot = p_Inflammatory_Macrophage)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Inflammatory_Macrophage, merged_data$mid.age, method = "spearman")
+
+p_value_Inflammatory_Macrophage <- correlation_result$p.value
+
+print(p_value_Inflammatory_Macrophage)
+```
+
+NK_like_Cells !
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_NK_like_Cells <- ggscatter(data = merged_data, x = "mid.age", y = "NK_like_Cells", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "NK_like_Cells
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_NK_like_Cells.png", plot = p_NK_like_Cells)
+```
+```{r}
+correlation_result <- cor.test(merged_data$NK_like_Cells, merged_data$mid.age, method = "spearman")
+
+p_value_NK_like_Cells <- correlation_result$p.value
+
+print(p_value_NK_like_Cells)
+```
+
+gamma_delta_T_Cells_1
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_gamma_delta_T_Cells_1 <- ggscatter(data = merged_data, x = "mid.age", y = "gamma_delta_T_Cells_1", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "gamma_delta_T_Cells_1
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_gamma_delta_T_Cells_1.png", plot = p_gamma_delta_T_Cells_1)
+```
+```{r}
+correlation_result <- cor.test(merged_data$gamma_delta_T_Cells_1, merged_data$mid.age, method = "spearman")
+
+p_value_gamma_delta_T_Cells_1 <- correlation_result$p.value
+
+print(p_value_gamma_delta_T_Cells_1)
+```
+
+Hepatocyte_5
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Hepatocyte_5 <- ggscatter(data = merged_data, x = "mid.age", y = "Hepatocyte_5", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Hepatocyte_5
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Hepatocyte_5.png", plot = p_Hepatocyte_5)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Hepatocyte_5, merged_data$mid.age, method = "spearman")
+
+p_value_Hepatocyte_5 <- correlation_result$p.value
+
+print(p_value_Hepatocyte_5)
+```
+
+Portal_endothelial_Cells
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Portal_endothelial_Cells <- ggscatter(data = merged_data, x = "mid.age", y = "Portal_endothelial_Cells", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Portal_endothelial_Cells
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Portal_endothelial_Cells.png", plot = p_Portal_endothelial_Cells)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Portal_endothelial_Cells, merged_data$mid.age, method = "spearman")
+
+p_value_Portal_endothelial_Cells <- correlation_result$p.value
+
+print(p_value_Portal_endothelial_Cells)
+```
+
+gamma_delta_T_Cells_2
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_gamma_delta_T_Cells_2 <- ggscatter(data = merged_data, x = "mid.age", y = "gamma_delta_T_Cells_2", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "gamma_delta_T_Cells_2
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_gamma_delta_T_Cells_2.png", plot = p_gamma_delta_T_Cells_2)
+```
+```{r}
+correlation_result <- cor.test(merged_data$gamma_delta_T_Cells_2, merged_data$mid.age, method = "spearman")
+
+p_value_gamma_delta_T_Cells_2 <- correlation_result$p.value
+
+print(p_value_gamma_delta_T_Cells_2)
+```
+
+Periportal_LSECs
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Periportal_LSECs <- ggscatter(data = merged_data, x = "mid.age", y = "Periportal_LSECs", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Periportal_LSECs
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Periportal_LSECs.png", plot = p_Periportal_LSECs)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Periportal_LSECs, merged_data$mid.age, method = "spearman")
+
+p_value_Periportal_LSECs <- correlation_result$p.value
+
+print(p_value_Periportal_LSECs)
+```
+
+Hepatocyte_6
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Hepatocyte_6 <- ggscatter(data = merged_data, x = "mid.age", y = "Hepatocyte_6", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Hepatocyte_6
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Hepatocyte_6.png", plot = p_Hepatocyte_6)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Hepatocyte_6, merged_data$mid.age, method = "spearman")
+
+p_value_Hepatocyte_6 <- correlation_result$p.value
+
+print(p_value_Hepatocyte_6)
+```
+
+Mature_B_Cells
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Mature_B_Cells <- ggscatter(data = merged_data, x = "mid.age", y = "Mature_B_Cells", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Mature_B_Cells
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Mature_B_Cells.png", plot = p_Mature_B_Cells)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Mature_B_Cells, merged_data$mid.age, method = "spearman")
+
+p_value_Mature_B_Cells <- correlation_result$p.value
+
+print(p_value_Mature_B_Cells)
+```
+
+Hepatic_Stellate_Cells
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Hepatic_Stellate_Cells <- ggscatter(data = merged_data, x = "mid.age", y = "Hepatic_Stellate_Cells", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Hepatic_Stellate_Cells
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Hepatic_Stellate_Cells.png", plot = p_Hepatic_Stellate_Cells)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Hepatic_Stellate_Cells, merged_data$mid.age, method = "spearman")
+
+p_value_Hepatic_Stellate_Cells <- correlation_result$p.value
+
+print(p_value_Hepatic_Stellate_Cells)
+```
+
+Plasma_Cells
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Plasma_Cells <- ggscatter(data = merged_data, x = "mid.age", y = "Plasma_Cells", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Plasma_Cells
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Plasma_Cells.png", plot = p_Plasma_Cells)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Plasma_Cells, merged_data$mid.age, method = "spearman")
+
+p_value_Plasma_Cells <- correlation_result$p.value
+
+print(p_value_Plasma_Cells)
+```
+
+Erythroid_Cells !
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Erythroid_Cells <- ggscatter(data = merged_data, x = "mid.age", y = "Erythroid_Cells", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Erythroid_Cells
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Erythroid_Cells.png", plot = p_Erythroid_Cells)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Erythroid_Cells, merged_data$mid.age, method = "spearman")
+
+p_value_Erythroid_Cells <- correlation_result$p.value
+
+print(p_value_Erythroid_Cells)
+```
+
+Hepatocyte_2
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Hepatocyte_2 <- ggscatter(data = merged_data, x = "mid.age", y = "Hepatocyte_2", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Hepatocyte_2
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Hepatocyte_2.png", plot = p_Hepatocyte_2)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Hepatocyte_2, merged_data$mid.age, method = "spearman")
+
+p_value_Hepatocyte_2 <- correlation_result$p.value
+
+print(p_value_Hepatocyte_2)
+```
+
+Hepatocyte_3 !!!!!!!!!!!!!!!!!!!!!!!
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Hepatocyte_3 <- ggscatter(data = merged_data, x = "mid.age", y = "Hepatocyte_3", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Hepatocyte_3
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Hepatocyte_3.png", plot = p_Hepatocyte_3)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Hepatocyte_3, merged_data$mid.age, method = "spearman")
+
+p_value_Hepatocyte_3 <- correlation_result$p.value
+
+print(p_value_Hepatocyte_3)
+```
+
+Hepatocyte_1
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Hepatocyte_1 <- ggscatter(data = merged_data, x = "mid.age", y = "Hepatocyte_1", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Hepatocyte_1
+")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Hepatocyte_1.png", plot = p_Hepatocyte_1)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Hepatocyte_1, merged_data$mid.age, method = "spearman")
+
+p_value_Hepatocyte_1 <- correlation_result$p.value
+
+print(p_value_Hepatocyte_1)
+```
+
+Hepatocyte_4
+```{r}
+# Load the necessary library
+library(ggpubr)
+
+# Create the scatter plot
+p_Hepatocyte_4 <- ggscatter(data = merged_data, x = "mid.age", y = "Hepatocyte_4", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman",
+          main = "Cell type proportion according to age", xlab = "age", ylab = "Hepatocyte_4"
+)
+ggsave("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Hepatocyte_4.png", plot = p_Hepatocyte_4)
+```
+```{r}
+correlation_result <- cor.test(merged_data$Hepatocyte_4, merged_data$mid.age, method = "spearman")
+
+p_value_Hepatocyte_4 <- correlation_result$p.value
+
+print(p_value_Hepatocyte_4)
+```
+
+
+
+
+
+```{r}
+pvalues <- c(p_value_Hepatocyte_4, p_value_Hepatocyte_1, p_value_Hepatocyte_3, p_value_Hepatocyte_2, p_value_Erythroid_Cells, p_value_Plasma_Cells, p_value_Hepatic_Stellate_Cells, p_value_Mature_B_Cells, p_value_Hepatocyte_6, p_value_Periportal_LSECs, p_value_gamma_delta_T_Cells_2, p_value_Portal_endothelial_Cells, p_value_Hepatocyte_5, p_value_NK_like_Cells, p_value_Inflammatory_Macrophage, p_value_Non_inflammatory_Macrophage, p_value_Cholangiocytes, p_value_Central_venous_LSECs)
+
+p.adjust(pvalues,method="bonferroni")
+```
+no significant correlation for all except => Hepatocyte 3 
+
+```{r}
+pvalues <- c(p_value_Hepatocyte_4, p_value_Hepatocyte_1, p_value_Hepatocyte_3, p_value_Hepatocyte_2, p_value_Erythroid_Cells, p_value_Plasma_Cells, p_value_Hepatic_Stellate_Cells, p_value_Mature_B_Cells, p_value_Hepatocyte_6, p_value_Periportal_LSECs, p_value_gamma_delta_T_Cells_2, p_value_Portal_endothelial_Cells, p_value_Hepatocyte_5, p_value_NK_like_Cells, p_value_Inflammatory_Macrophage, p_value_Non_inflammatory_Macrophage, p_value_Cholangiocytes, p_value_Central_venous_LSECs)
+
+p.adjust(pvalues,method="BH")
+```
+no significant correlation for all except => Hepatocyte 3 
+
+p_value_Hepatocyte_3
+
+0.05
+
+```{r}
+data_long <- merged_data %>%
+  pivot_longer(cols = c("Central_venous_LSECs", "Cholangiocytes", "Inflammatory_Macrophage", "Inflammatory_Macrophage", "NK_like_Cells", "gamma_delta_T_Cells_2", "Periportal_LSECs", "Hepatocyte_6", "Mature_B_Cells", "Hepatic_Stellate_Cells", "Plasma_Cells", "Erythroid_Cells", "Hepatocyte_2", "Hepatocyte_3", "Hepatocyte_1", "Hepatocyte_4", "Hepatocyte_5", "Portal_endothelial_Cells"), names_to = "Cell_Type", values_to = "Fraction")
+##removing O
+```
+
+```{r}
+data_long
+```
+
+
+```{r}
+library(viridis)
+library(ggplot2)
+library(dplyr)
+
+# Generate a sequence of colors using the viridis palette
+colors <- viridis(20)
+
+# Create the plot
+p2 <- data_long %>%
+  group_by(AGE, Cell_Type) %>%
+  summarise(mf = mean(Fraction)) %>%
+  ungroup() %>%
+  ggplot(aes(y = AGE, x = mf, fill = Cell_Type)) +
+  geom_bar(stat = "identity") +
+  scale_fill_viridis_d() +
+  labs(title = "Cellular composition according to age", y = "Age", x = "Fraction of Cell Types") +
+  theme_minimal() +
+  coord_flip() +
+  theme(
+    legend.key.width = unit(0.5, "cm"),  # Decrease the width of legend key
+    legend.key.height = unit(0.5, "cm")  # Decrease the height of legend key
+  )
+
+# Display the plot
+print(p2)
+
+# Save the plot
+png("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p_Liver_Cell_Comp.png", 
+    width = 6, height = 4, units = "in", res = 800)
+print(p2)  # Print the plot again inside the PNG device
+dev.off()
+```
+
+```{r}
+p2_age <- barplot(table(merged_data$AGE), 
+        main = "Age of our samples",
+        xlab = "Age",
+        ylab = "Number of samples")
+
+p2_age <- recordPlot()
+png("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\Images\\p2_Liver_Age_Nb.png", width = 6, height = 4, units = "in", res = 800)
+replayPlot(p2_age)
+dev.off()
+```
+```{r}
+# Calculate the total number of samples
+total_samples <- sum(table(merged_data$AGE))
+
+# Print the total number of samples
+cat("Total samples:", total_samples, "\n")
+
+```
+
