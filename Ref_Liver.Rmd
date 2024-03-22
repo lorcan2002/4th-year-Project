@@ -1,0 +1,107 @@
+```{r}
+library(biomaRt)
+library(Seurat)
+library(SeuratDisk)
+library(tidyverse)
+```
+
+8444reported cell total 
+
+```{r}
+setwd("C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_")
+```
+
+```{r}
+liver_table <- read.csv("GSE115469_Data.csv.gz")
+```
+
+```{r}
+liver_table
+```
+
+```{r}
+head(liver_table$X)
+```
+
+
+
+
+```{r}
+liver_cellcluster_table <- read.csv("GSE115469_CellClusterType.txt.gz")
+```
+
+```{r}
+liver_cellcluster_table
+```
+
+
+
+```{r}
+liver_table_sep <- separate(liver_cellcluster_table, 
+                           CellName.Sample.Cell..Cluster..CellType, 
+                           into = c("CellName", "Sample", "Cell", "Cluster", "CellType"), 
+                           sep = "\t")
+
+print(liver_table_sep)
+```
+
+
+```{r}
+liver_table
+```
+
+```{r}
+colnames(liver_table)[1] <- " "
+liver_table
+```
+
+
+```{r}
+liver_table_sep_CN_CT <- liver_table_sep[, c("CellName", "CellType")]
+print(liver_table_sep_CN_CT)
+```
+
+
+
+```{r}
+# Assuming table1 is your first table and table2 is your second table
+
+# Extract the column names from column 2 of table2
+new_column_names <- liver_table_sep_CN_CT[, 2]
+
+# Replace the column names of table1 with the names from table2
+colnames(liver_table)[-1] <- new_column_names
+
+# Print the updated table1
+print(liver_table)
+
+```
+
+
+
+```{r}
+names(liver_table)[1] <- " Genes "
+liver_table
+```
+
+
+```{r}
+liver_table3 <- liver_table
+liver_table3
+```
+
+
+
+```{r}
+write.table(liver_table3, "C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\liver_table3.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
+
+```{r}
+write.table(liver_table, "C:\\Users\\lorca\\Documents\\Project\\2 Liver\\Liver_\\liver_table.txt", quote = FALSE, row.names = FALSE)
+```
+
+END !!!!!!!!!!!!!!!!!!!!
+
+
+
