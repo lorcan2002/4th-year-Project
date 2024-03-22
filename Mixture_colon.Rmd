@@ -1,0 +1,63 @@
+
+```{r}
+setwd("C:\\Users\\lorca\\Documents\\Project\\4 Colon")
+```
+
+```{r}
+gct_colon <- read.table("gene_reads_2017-06-05_v8_colon_sigmoid.gct.gz", header = TRUE, sep = "\t", skip = 2, stringsAsFactors = FALSE)
+```
+
+
+```{r}
+gct_colon
+```
+
+```{r}
+colnames(gct_colon) <- gsub("\\.", "-", colnames(gct_colon))
+colnames(gct_colon) <- gsub("GTE", "GTEX", colnames(gct_colon))
+cols <- colnames(gct_colon)[3:ncol(gct_colon)]
+test <- str_split_fixed(cols, "-", n = 5)[,1:2]
+test <- paste("GTEX", str_split_fixed(cols, "-", n = 5)[,2], sep = "-")
+test
+```
+
+```{r}
+colnames(gct_colon)[3:ncol(gct_colon)] <- test
+```
+
+
+```{r}
+gct_colon[1:5, 1:6]
+```
+
+
+```{r}
+colnames(gct_colon)[3] <- "gene_name"
+colnames(gct_colon)[2] <- "gene_id"
+```
+
+```{r}
+gct_colon <- gct_colon[,-1] ##to delete column 1
+gct_colon
+```
+
+
+```{r}
+gct_colon <- gct_colon[, -1]
+names(gct_colon)[1] <- "Genes"
+gct_colon
+```
+
+
+
+```{r}
+Colon_RC <- gct_colon
+Colon_RC
+```
+
+
+
+
+```{r}
+write.table(Colon_RC, "C:\\Users\\lorca\\Documents\\Project\\4 Pancreas\\Colon_RC.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
