@@ -1,0 +1,57 @@
+GSE81861_CRC_NM_all_cells_COUNT.csv
+```{r}
+setwd("C:\\Users\\lorca\\Documents\\Project\\4 Colon")
+```
+
+```{r}
+Colon_table <- read.csv("GSE81861_CRC_NM_all_cells_COUNT.csv.gz", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+```
+
+```{r}
+Colon_table
+```
+
+
+```{r}
+# Extract substring after the last underscore in the first column
+Colon_table$X <- sub("^.*_(.*?)_.*$", "\\1", Colon_table$X)
+
+# Print the modified data
+print(Colon_table)
+```
+
+```{r}
+# Change the title of the first column
+colnames(Colon_table)[1] <- "Genes"
+
+# Print the modified data
+print(Colon_table)
+```
+
+
+```{r}
+# Extract substring between double underscores in the column title
+new_colnames <- sub("^.*__(.*?)__.*$", "\\1", colnames(Colon_table))
+
+# Rename the columns
+colnames(Colon_table) <- new_colnames
+
+# Print the modified data
+print(Colon_table)
+```
+
+
+```{r}
+# Convert all columns except the first one from dbl to int
+Colon_table[, -1] <- lapply(Colon_table[, -1], as.integer)
+
+# Print the modified data
+print(Colon_table)
+```
+
+
+```{r}
+write.table(Colon_table, "C:\\Users\\lorca\\Documents\\Project\\4 Pancreas\\Colon_table.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+```
+
+
