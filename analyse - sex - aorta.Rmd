@@ -1,0 +1,278 @@
+```{r}
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
+```
+
+```{r}
+colnames(cibersort_results)
+```
+
+VSMC_I
+```{r}
+library("ggpubr")
+p_sex_VSMC_I <- ggboxplot(cibersort_results, x = "SEX", y = "VSMC_I", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "VSMC_I", xlab = "SEX")
+
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_VSMC_I.png", plot = p_sex_VSMC_I)
+```
+```{r}
+VSMC_I <- wilcox.test(VSMC_I ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+VSMC_I
+```
+
+VSMC_II
+```{r}
+library("ggpubr")
+p_sex_VSMC_II <- ggboxplot(cibersort_results, x = "SEX", y = "VSMC_II", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "VSMC_II", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_VSMC_II.png", plot = p_sex_VSMC_II)
+```
+```{r}
+VSMC_II <- wilcox.test(VSMC_II ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+VSMC_II
+```
+
+Endothelial_I 
+```{r}
+library("ggpubr")
+p_sex_Endothelial_I <- ggboxplot(cibersort_results, x = "SEX", y = "Endothelial_I", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Endothelial_I", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Endothelial_I.png", plot = p_sex_Endothelial_I)
+```
+```{r}
+Endothelial_I <- wilcox.test(Endothelial_I ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Endothelial_I
+```
+
+Endothelial_II
+```{r}
+library("ggpubr")
+p_sex_Endothelial_II <- ggboxplot(cibersort_results, x = "SEX", y = "Endothelial_II", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Endothelial_II", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Endothelial_II.png", plot = p_sex_Endothelial_II)
+```
+```{r}
+Endothelial_II <- wilcox.test(Endothelial_II ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Endothelial_II
+```
+
+Fibroblast_I
+```{r}
+library("ggpubr")
+p_sex_Fibroblast_I <- ggboxplot(cibersort_results, x = "SEX", y = "Fibroblast_I", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Fibroblast_I", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Fibroblast_I.png", plot = p_sex_Fibroblast_I)
+```
+```{r}
+Fibroblast_I <- wilcox.test(Fibroblast_I ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Fibroblast_I
+```
+
+Fibroblast_II
+```{r}
+library("ggpubr")
+p_sex_Fibroblast_II <- ggboxplot(cibersort_results, x = "SEX", y = "Fibroblast_II", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Fibroblast_II", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Fibroblast_II.png", plot = p_sex_Fibroblast_II)
+```
+```{r}
+Fibroblast_II <- wilcox.test(Fibroblast_II ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Fibroblast_II
+```
+
+Pericyte
+```{r}
+library("ggpubr")
+p_sex_Pericyte <- ggboxplot(cibersort_results, x = "SEX", y = "Pericyte", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Pericyte", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Pericyte.png", plot = p_sex_Pericyte)
+```
+```{r}
+Pericyte <- wilcox.test(Pericyte ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Pericyte
+```
+
+X_
+```{r}
+library("ggpubr")
+p_sex_X_ <- ggboxplot(cibersort_results, x = "SEX", y = "X_", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "X_", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_X_.png", plot = p_sex_X_)
+```
+```{r}
+X_ <- wilcox.test(X_ ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+X_
+```
+
+Neuron`
+```{r}
+library("ggpubr")
+p_sex_Neuron <- ggboxplot(cibersort_results, x = "SEX", y = "Neuron", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Neuron", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Neuron.png", plot = p_sex_Neuron)
+```
+```{r}
+Neuron <- wilcox.test(Neuron ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Neuron
+```
+
+Macrophage
+```{r}
+library("ggpubr")
+p_sex_Macrophage <- ggboxplot(cibersort_results, x = "SEX", y = "Macrophage", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Macrophage", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Macrophage.png", plot = p_sex_Macrophage)
+```
+```{r}
+Macrophage <- wilcox.test(Macrophage ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Macrophage
+```
+
+Mesothelial
+```{r}
+library("ggpubr")
+p_sex_Mesothelial <- ggboxplot(cibersort_results, x = "SEX", y = "Mesothelial", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Mesothelial", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Mesothelial.png", plot = p_sex_Mesothelial)
+```
+```{r}
+Mesothelial <- wilcox.test(Mesothelial ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Mesothelial
+```
+
+Lymphocyte
+```{r}
+library("ggpubr")
+p_sex_Lymphocyte <- ggboxplot(cibersort_results, x = "SEX", y = "Lymphocyte", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Lymphocytes", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Lymphocyte.png", plot = p_sex_Lymphocyte)
+```
+```{r}
+Lymphocyte <- wilcox.test(Lymphocyte ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Lymphocyte
+```
+
+Lymphatic_Endothelial
+```{r}
+library("ggpubr")
+p_sex_Lymphatic_Endothelial <- ggboxplot(cibersort_results, x = "SEX", y = "Lymphatic_Endothelial", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Lymphatic_Endothelial", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_sex_Lymphatic_Endothelial.png", plot = p_sex_Lymphatic_Endothelial)
+```
+```{r}
+Lymphatic_Endothelial <- wilcox.test(Lymphatic_Endothelial ~ SEX, data = cibersort_results,
+                   exact = FALSE)
+Lymphatic_Endothelial
+```
+
+```{r}
+colnames(cibersort_results)
+```
+
+
+```{r}
+pvalues <- c(VSMC_I[["p.value"]], VSMC_II[["p.value"]], Endothelial_I[["p.value"]], Endothelial_II[["p.value"]], Fibroblast_I[["p.value"]], Fibroblast_II[["p.value"]], Pericyte[["p.value"]], X_[["p.value"]], Neuron[["p.value"]], Macrophage[["p.value"]], Mesothelial[["p.value"]], Lymphocyte[["p.value"]], Lymphatic_Endothelial[["p.value"]])
+
+p.adjust(pvalues,method="bonferroni")
+```
+
+```{r}
+pvalues <- c(VSMC_I[["p.value"]], VSMC_II[["p.value"]], Endothelial_I[["p.value"]], Endothelial_II[["p.value"]], Fibroblast_I[["p.value"]], Fibroblast_II[["p.value"]], Pericyte[["p.value"]], X_[["p.value"]], Neuron[["p.value"]], Macrophage[["p.value"]], Mesothelial[["p.value"]], Lymphocyte[["p.value"]], Lymphatic_Endothelial[["p.value"]])
+
+p.adjust(pvalues,method="BH")
+```
+
+both case no significant correlation ... 
+sex too 
+```{r}
+p_sex <- barplot(table(cibersort_results$SEX), 
+        main = "Sex of our samples",
+        xlab = "Sex: 1 = Male and 2 = Female",
+        ylab = "Number of samples")
+
+p_sex <- recordPlot()
+png("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_Aorta_Sex_Nb.png", width = 6, height = 4, units = "in", res = 800)
+replayPlot(p_sex)
+dev.off()
+```
+
+```{r}
+# Compute the number of occurrences of "1" in the "sex" column
+count_ones <- sum(cibersort_results$SEX == 1)
+
+# Print the result
+print(count_ones)
+```
+
+```{r}
+# Compute the number of occurrences of "1" in the "sex" column
+count_ones <- sum(cibersort_results$SEX == 2)
+
+# Print the result
+print(count_ones)
+```
+
+```{r}
+# Calculate the total number of samples
+total_samples <- sum(table(cibersort_results$SEX))
+
+# Print the total number of samples
+cat("Total samples:", total_samples, "\n")
+
+```
+
+
+
+
+```{r}
+library(viridis)
+library(dplyr)
+library(ggplot2)
+
+# Generate a sequence of colors using the viridis palette
+colors <- viridis(20)
+
+pS <- data_long %>%
+  group_by(Cell_Type, SEX) %>%
+  summarise(mf = mean(Fraction)) %>%
+  ungroup() %>%
+  ggplot(aes(x = factor(SEX), y = mf, fill = Cell_Type)) +
+  geom_bar(stat = "identity") +
+  scale_fill_viridis_d() +
+  labs(title = "Cellular composition according to sex", x = "Sex: 1=Male and 2=Female", y = "Fraction of Cell Types") +
+  theme_minimal() 
+
+pS
+
+pS <- recordPlot()
+png("C:\\Users\\lorca\\Documents\\Project\\1 Aorta\\p_Sex_Aorta_Cell_Comp.png", width = 6, height = 4, units = "in", res = 800)
+replayPlot(pS)
+dev.off()
+```
+
+
