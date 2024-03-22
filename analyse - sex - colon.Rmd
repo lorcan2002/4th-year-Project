@@ -1,0 +1,306 @@
+```{r}
+setwd("C:\\Users\\lorca\\Documents\\Project\\4 Colon")
+```
+
+
+```{r}
+Colon_dec <- read.table("CIBERSORTx_Colon.txt")
+Colon_dec
+```
+
+
+```{r}
+# Extract the first row of the data frame
+first_row <- Colon_dec[1, ]
+
+# Assign the values from the first row as column names
+colnames(Colon_dec) <- first_row
+
+# Remove the first row, as it's no longer needed as column names
+Colon_dec <- Colon_dec[-1, ]
+
+rownames(Colon_dec) <- NULL
+
+# Display the resulting data frame
+print(Colon_dec)
+```
+
+```{r}
+names(Colon_dec)[names(Colon_dec) == "Mixture"] <- "SUBJID"
+```
+
+
+
+```{r}
+colnames(Colon_dec)
+Colon_dec
+```
+
+```{r}
+age_sex <- read.csv("GTEx_Analysis_v8_Annotations_SubjectPhenotypes.txt", header = FALSE, sep = "\t")
+age_sex
+```
+
+```{r}
+# Extract the first row of the data frame
+first_row <- age_sex[1, ]
+
+# Assign the values from the first row as column names
+colnames(age_sex) <- first_row
+
+# Remove the first row, as it's no longer needed as column names
+age_sex <- age_sex[-1, ]
+
+rownames(age_sex) <- NULL
+
+# Display the resulting data frame
+print(age_sex)
+```
+
+```{r}
+merged_data2 <- merge(Colon_dec, age_sex, by = "SUBJID", all.x = TRUE)
+merged_data2
+```
+
+```{r}
+colnames(merged_data2)
+```
+
+```{r}
+
+# Function to calculate mid age from age range
+calculate_mid_age <- function(age_range) {
+  age_values <- as.numeric(strsplit(age_range, "-")[[1]])
+  mid.age <- mean(age_values)
+  return(mid.age)
+}
+
+# Apply the function to each row of merged_data2 and create a new column "mid_age"
+merged_data2$mid.age <- sapply(merged_data2$AGE, calculate_mid_age)
+
+# Print the dataframe to see the changes
+print(merged_data2)
+```
+
+```{r}
+# Increase all numbers in the mid_age column by 0.5
+merged_data2$mid.age <- merged_data2$mid.age + 0.5
+
+# Print the dataframe to see the changes
+print(merged_data2)
+
+```
+
+```{r}
+num_cols <- ncol(merged_data2)
+
+# Reorder the columns
+new_order <- c(1:10, 14, 11:13, (15:num_cols)[(15:num_cols) <= num_cols])  # Define the new order of columns
+merged_data2 <- merged_data2[, new_order]  # Reorder the columns
+merged_data2 <- merged_data2[, -which(names(merged_data2) == "mid.age.1")]
+merged_data2
+```
+
+```{r}
+columns_to_convert <- 2:7
+
+# Loop through each column and convert
+for (col_index in columns_to_convert) {
+   merged_data2[[col_index]] <- round(as.numeric(as.character(merged_data2[[col_index]])), digits = 3)
+  # or if you want to round the values
+  # merged_data2[[col_index]] <- round(as.numeric(as.character(merged_data2[[col_index]])), digits = 3)
+}
+```
+
+```{r}
+merged_data2$SEX <- as.numeric(as.character(merged_data2$SEX))
+# or
+# merged_data2$column_name <- as.integer(as.character(merged_data2$column_name))
+print(merged_data2$SEX)
+merged_data2
+```
+
+```{r}
+merged_data2[, 11:12] <- lapply(merged_data2[, 11:12], as.integer)
+merged_data2
+str(merged_data2)
+```
+
+
+Bcell
+```{r}
+library("ggpubr")
+p_sex_Bcell <- ggboxplot(merged_data2, x = "SEX", y = "Bcell", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Bcell", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_sex_Bcell.png", plot = p_sex_Bcell)
+```
+```{r}
+Bcell2 <- wilcox.test(Bcell ~ SEX, data = merged_data2,
+                   exact = FALSE)
+Bcell2
+```
+
+
+Tcell
+```{r}
+library("ggpubr")
+p_sex_Tcell <- ggboxplot(merged_data2, x = "SEX", y = "Tcell", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Tcell", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_sex_Tcell.png", plot = p_sex_Tcell)
+```
+```{r}
+Tcell2 <- wilcox.test(Tcell ~ SEX, data = merged_data2,
+                   exact = FALSE)
+Tcell2
+```
+
+Epithelial
+```{r}
+library("ggpubr")
+p_sex_Epithelial <- ggboxplot(merged_data2, x = "SEX", y = "Epithelial", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Epithelial", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_sex_Epithelial.png", plot = p_sex_Epithelial)
+```
+```{r}
+Epithelial2 <- wilcox.test(Epithelial ~ SEX, data = merged_data2,
+                   exact = FALSE)
+Epithelial2
+```
+
+Fibroblast
+```{r}
+library("ggpubr")
+p_sex_Fibroblast <- ggboxplot(merged_data2, x = "SEX", y = "Fibroblast", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Fibroblast", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_sex_Fibroblast.png", plot = p_sex_Fibroblast)
+```
+```{r}
+Fibroblast2 <- wilcox.test(Fibroblast ~ SEX, data = merged_data2,
+                   exact = FALSE)
+Fibroblast2
+```
+
+MastCell
+```{r}
+library("ggpubr")
+p_sex_MastCell <- ggboxplot(merged_data2, x = "SEX", y = "MastCell", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "MastCell", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_sex_MastCell.png", plot = p_sex_MastCell)
+```
+```{r}
+MastCell2 <- wilcox.test(MastCell ~ SEX, data = merged_data2,
+                   exact = FALSE)
+MastCell2
+```
+
+Macrophage
+```{r}
+library("ggpubr")
+p_sex_Macrophage <- ggboxplot(merged_data2, x = "SEX", y = "Macrophage", 
+          color = "SEX", palette = c("#00AFBB", "#E7B800"),
+          main = "Cell type proportion according to sex", ylab = "Macrophage", xlab = "SEX")
+ggsave("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_sex_Macrophage.png", plot = p_sex_Macrophage)
+```
+```{r}
+Macrophage2 <- wilcox.test(Macrophage ~ SEX, data = merged_data2,
+                   exact = FALSE)
+Macrophage2
+```
+
+
+```{r}
+pvalues <- c(Bcell2[["p.value"]], Tcell2[["p.value"]], Epithelial2[["p.value"]], Fibroblast2[["p.value"]], MastCell2[["p.value"]], Macrophage2[["p.value"]])
+
+p.adjust(pvalues,method="bonferroni")
+```
+
+```{r}
+pvalues <- c(Bcell2[["p.value"]], Tcell2[["p.value"]], Epithelial2[["p.value"]], Fibroblast2[["p.value"]], MastCell2[["p.value"]], Macrophage2[["p.value"]])
+
+p.adjust(pvalues,method="BH")
+```
+no significance btw both 
+
+
+sex too 
+
+```{r}
+p2_sex <- barplot(table(merged_data2$SEX), 
+        main = "Sex of our samples",
+        xlab = "Sex: 1 = Male and 2 = Female",
+        ylab = "Number of samples")
+
+p2_sex <- recordPlot()
+png("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Colon_Sex_Nb.png", width = 6, height = 4, units = "in", res = 800)
+replayPlot(p2_sex)
+dev.off()
+```
+
+```{r}
+# Compute the number of occurrences of "1" in the "sex" column
+count_ones <- sum(merged_data2$SEX == 1)
+
+# Print the result
+print(count_ones)
+```
+
+```{r}
+# Compute the number of occurrences of "1" in the "sex" column
+count_ones <- sum(merged_data2$SEX == 2)
+
+# Print the result
+print(count_ones)
+```
+
+
+```{r}
+library(tidyr)
+data_long2 <- merged_data2 %>%
+  pivot_longer(cols = c("Bcell", "Tcell", "Epithelial", "Fibroblast", "MastCell", "Macrophage"), names_to = "Cell_Type", values_to = "Fraction")
+```
+
+```{r}
+data_long2
+```
+
+
+
+```{r}
+library(viridis)
+library(dplyr)
+library(ggplot2)
+
+# Generate a sequence of colors using the viridis palette
+colors <- viridis(20)
+
+p3S <- data_long2 %>%
+  group_by(Cell_Type, SEX) %>%
+  summarise(mf = mean(Fraction)) %>%
+  ungroup() %>%
+  ggplot(aes(x = factor(SEX), y = mf, fill = Cell_Type)) +
+  geom_bar(stat = "identity") +
+  scale_fill_viridis_d() +
+  labs(title = "Cellular composition according to sex",x = "Sex: 1=Male and 2=Female", y = "Fraction of Cell Types") +
+  theme_minimal() 
+
+p3S
+
+p3S <- recordPlot()
+png("C:\\Users\\lorca\\Documents\\Project\\4 Colon\\Images\\p_Sex_Colon_Cell_Comp.png", width = 6, height = 4, units = "in", res = 800)
+replayPlot(p3S)
+dev.off()
+```
+
+
+
+
+
+
+
+
+
